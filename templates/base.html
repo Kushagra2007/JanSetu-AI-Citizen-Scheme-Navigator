@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Citizen Service Navigator{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="manifest" href="/static/manifest.json">
+  <script src="/static/js/theme.js"></script>
+</head>
+<body>
+  {% if user %}
+  <nav class="navbar glass container">
+    <a href="/" class="brand">🧭 Citizen Navigator</a>
+    <div class="nav-links">
+      <a href="/chat">💬 Chat</a>
+      <a href="/schemes">🎯 Schemes</a>
+      <a href="/applications">📋 Applications</a>
+      <a href="/profile">👤 Profile</a>
+      <a href="/notifications" class="bell-wrap">🔔 <span id="unreadDot" class="bell-dot" style="display:none;"></span></a>
+      <a href="/settings">⚙️ Settings</a>
+      <button class="btn-icon btn-ghost" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  <footer>© 2024 Citizen Service Navigator · Built for accessible governance</footer>
+
+  <script src="/static/js/app.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Citizen Service Navigator — Home{% endblock %}
+{% block content %}
+<div class="container">
+  <nav class="navbar glass" style="margin-top:14px;">
+    <a href="/" class="brand">🧭 Citizen Navigator</a>
+    <div class="nav-links">
+      <a href="/login">Login</a>
+      <a href="/register" class="btn btn-primary" style="padding:8px 18px;">Get Started</a>
+      <button class="btn-icon btn-ghost" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>Your Guide to Government Schemes & Services</h1>
+    <p>Chat in Hindi or English, discover schemes you're eligible for, and get step-by-step help for PAN, Aadhaar, Passport & more — all in one place.</p>
+    <div class="hero-buttons">
+      <a href="/register" class="btn btn-primary">Start Free →</a>
+      <a href="/login" class="btn btn-outline">I already have an account</a>
+    </div>
+  </section>
+
+  <div class="grid grid-3" style="margin:40px 0 80px;">
+    <div class="card glass">
+      <h3>🎯 25+ Schemes</h3>
+      <p style="color:var(--text-muted);margin-top:8px;">Scholarships, agriculture, healthcare, pension & more — matched to your profile with a smart 60-30-10 score.</p>
+    </div>
+    <div class="card glass">
+      <h3>🗣️ Voice-Enabled Chat</h3>
+      <p style="color:var(--text-muted);margin-top:8px;">Speak or type in Hindi/English. The assistant listens, understands, and talks back.</p>
+    </div>
+    <div class="card glass">
+      <h3>📋 Step-by-Step Pathways</h3>
+      <p style="color:var(--text-muted);margin-top:8px;">Detailed guidance for PAN, Aadhaar, Passport, Driving License, Voter ID, Ration Card & Bank Account.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

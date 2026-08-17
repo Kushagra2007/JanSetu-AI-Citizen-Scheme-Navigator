@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Profile — Citizen Service Navigator{% endblock %}
+{% block content %}
+<div class="container" style="padding:20px 20px 60px;">
+  <h2>👤 Your Profile</h2>
+  <div class="glass card" style="margin:20px 0;">
+    <p id="completenessText" style="font-weight:600;margin-bottom:8px;">0% complete</p>
+    <div class="progress-bar"><div class="progress-fill" id="completenessFill" style="width:0%;"></div></div>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="glass card">
+      <h3>Personal Details</h3>
+      <form id="profileForm">
+        <div class="grid grid-2">
+          <div class="form-group"><label>Age</label><input type="number" id="age" class="form-control"></div>
+          <div class="form-group"><label>Gender</label>
+            <select id="gender" class="form-control"><option value="">Select</option><option>Male</option><option>Female</option><option>Transgender</option></select>
+          </div>
+          <div class="form-group"><label>Annual Income (₹)</label><input type="number" id="income" class="form-control"></div>
+          <div class="form-group"><label>Occupation</label>
+            <select id="occupation" class="form-control">
+              <option value="">Select</option><option value="farmer">Farmer</option><option value="student">Student</option>
+              <option value="unemployed">Unemployed</option><option value="business">Business</option>
+              <option value="labourer">Labourer</option><option value="employee">Employee</option>
+            </select>
+          </div>
+          <div class="form-group"><label>State</label><input type="text" id="state" class="form-control"></div>
+          <div class="form-group"><label>District</label><input type="text" id="district" class="form-control"></div>
+          <div class="form-group"><label>Category</label>
+            <select id="category" class="form-control"><option value="">Select</option><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>EWS</option></select>
+          </div>
+          <div class="form-group"><label>Education</label>
+            <select id="education" class="form-control"><option value="">Select</option><option value="below_10th">Below 10th</option><option value="10th">10th</option><option value="12th">12th</option><option value="graduate">Graduate</option><option value="postgraduate">Postgraduate</option></select>
+          </div>
+          <div class="form-group"><label>Marital Status</label>
+            <select id="marital_status" class="form-control"><option value="">Select</option><option>Unmarried</option><option>Married</option><option>Widow</option></select>
+          </div>
+          <div class="form-group" style="display:flex;align-items:center;gap:10px;margin-top:26px;">
+            <input type="checkbox" id="disability" style="width:20px;height:20px;"> <label style="margin:0;">Person with disability</label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:10px;">Save Profile</button>
+      </form>
+    </div>
+
+    <div class="glass card">
+      <h3>📄 Document Checklist</h3>
+      <div id="docChecklist" style="margin-top:14px;display:flex;flex-direction:column;gap:6px;"></div>
+      <a href="/settings" class="btn btn-outline" style="margin-top:16px;">Connect DigiLocker to auto-verify →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/profile.js"></script>{% endblock %}
