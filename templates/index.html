@@ -1,38 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Citizen Service Navigator — Home{% endblock %}
+{% block title %}JanSetu — Public service, made clear{% endblock %}
 {% block content %}
-<div class="container">
-  <nav class="navbar glass" style="margin-top:14px;">
-    <a href="/" class="brand">🧭 Citizen Navigator</a>
-    <div class="nav-links">
-      <a href="/login">Login</a>
-      <a href="/register" class="btn btn-primary" style="padding:8px 18px;">Get Started</a>
-      <button class="btn-icon btn-ghost" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
-    </div>
+<div class="container landing-shell">
+  <nav class="navbar landing-nav">
+    <a href="/" class="brand"><span class="brand-mark">J</span><span>JanSetu</span></a>
+    <div class="nav-links"><a href="/login">Sign in</a><a href="/register" class="btn btn-primary nav-cta">Create account</a><button class="btn-icon btn-ghost theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle colour theme"><span class="icon icon-moon"></span></button></div>
   </nav>
-
-  <section class="hero">
-    <h1>Your Guide to Government Schemes & Services</h1>
-    <p>Chat in Hindi or English, discover schemes you're eligible for, and get step-by-step help for PAN, Aadhaar, Passport & more — all in one place.</p>
-    <div class="hero-buttons">
-      <a href="/register" class="btn btn-primary">Start Free →</a>
-      <a href="/login" class="btn btn-outline">I already have an account</a>
-    </div>
-  </section>
-
-  <div class="grid grid-3" style="margin:40px 0 80px;">
-    <div class="card glass">
-      <h3>🎯 25+ Schemes</h3>
-      <p style="color:var(--text-muted);margin-top:8px;">Scholarships, agriculture, healthcare, pension & more — matched to your profile with a smart 60-30-10 score.</p>
-    </div>
-    <div class="card glass">
-      <h3>🗣️ Voice-Enabled Chat</h3>
-      <p style="color:var(--text-muted);margin-top:8px;">Speak or type in Hindi/English. The assistant listens, understands, and talks back.</p>
-    </div>
-    <div class="card glass">
-      <h3>📋 Step-by-Step Pathways</h3>
-      <p style="color:var(--text-muted);margin-top:8px;">Detailed guidance for PAN, Aadhaar, Passport, Driving License, Voter ID, Ration Card & Bank Account.</p>
-    </div>
-  </div>
+  <main>
+    <section class="hero hero-redesign">
+      <div class="hero-copy"><p class="eyebrow">A simpler way to access support</p><h1>Public services, <em>made clear.</em></h1><p class="hero-lede">Find the support you qualify for and get practical help with everyday government services — in the language you’re comfortable with.</p><div class="hero-buttons"><a href="/register" class="btn btn-primary">Get started <span aria-hidden="true">→</span></a><a href="/login" class="text-link">I have an account <span aria-hidden="true">→</span></a></div><div class="trust-row"><span class="trust-rule"></span><span>Built for everyday access</span></div></div>
+      <div class="hero-visual" aria-hidden="true"><div class="visual-orbit orbit-one"></div><div class="visual-orbit orbit-two"></div><div class="navigator-card"><div class="card-topline"><span class="mini-mark">J</span><span>YOUR NEXT STEP</span></div><h3>Find support that fits your life.</h3><div class="card-path"><span class="path-dot"></span><span></span><span></span><span></span></div><p>Answer a few simple questions to see relevant schemes.</p></div><div class="floating-note note-one">25+ schemes to explore</div><div class="floating-note note-two">Hindi &amp; English</div></div>
+    </section>
+    <section class="feature-section"><div class="section-intro"><p class="eyebrow">Everything in one place</p><h2>Less searching. More clarity.</h2></div><div class="feature-grid"><article class="feature-card"><span class="feature-number">01</span><span class="feature-icon icon-compass"></span><h3>Discover what fits</h3><p>Get a focused list of schemes based on your personal situation and needs.</p></article><article class="feature-card feature-card-accent"><span class="feature-number">02</span><span class="feature-icon icon-chat"></span><h3>Ask, naturally</h3><p>Talk through your questions in Hindi or English, by typing or speaking.</p></article><article class="feature-card"><span class="feature-number">03</span><span class="feature-icon icon-route"></span><h3>Move forward</h3><p>Follow clear, step-by-step pathways for the services that matter to you.</p></article></div></section>
+  </main>
 </div>
 {% endblock %}

@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from fastapi import FastAPI, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -9,6 +10,7 @@ from database import Base, engine, get_db
 from models import Scheme, Service, User, Profile
 from data.schemes_data import SCHEMES
 from data.services_data import SERVICES
+from data.seed import ensure_reference_data
 from auth import get_optional_user, hash_password, generate_token
 
 from api_routes import (
@@ -20,8 +22,9 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Citizen Service Navigator", version="1.0.0")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+BASE_DIR = Path(__file__).resolve().parent
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
+templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 for r in [auth_routes.router, profile_routes.router, chat_routes.router, scheme_routes.router,
           service_routes.router, application_routes.router, notification_routes.router,
@@ -47,26 +50,7 @@ def seed_data():
         db.refresh(demo_user)
         db.add(Profile(user_id=demo_user.id))
 
-    if db.query(Scheme).count() == 0:
-        for s in SCHEMES:
-            db.add(Scheme(
-                name=s["name"], category=s["category"], description=s["description"],
-                benefits=s["benefits"], min_age=s["min_age"], max_age=s["max_age"],
-                max_income=s["max_income"], gender=s["gender"],
-                caste_categories=json.dumps(s["caste_categories"]),
-                occupations=json.dumps(s["occupations"]), states=json.dumps(s["states"]),
-                education=json.dumps(s["education"]), marital_status=s["marital_status"],
-                disability_required=s["disability_required"],
-                documents_required=json.dumps(s["documents_required"]),
-                deadline=s["deadline"], department=s["department"], official_url=s["official_url"],
-            ))
-    if db.query(Service).count() == 0:
-        for sv in SERVICES:
-            db.add(Service(
-                name=sv["name"], category=sv["category"], description=sv["description"],
-                fee=sv["fee"], duration_estimate=sv["duration_estimate"],
-                steps=json.dumps(sv["steps"]),
-            ))
+    ensure_reference_data(db)
     db.commit()
     db.close()
 
@@ -111,6 +95,13 @@ def schemes_page(request: Request, user=Depends(get_optional_user)):
     if not user:
         return RedirectResponse("/login")
     return templates.TemplateResponse("schemes.html", {"request": request, "user": user})
+
+
+@app.get("/services")
+def services_page(request: Request, user=Depends(get_optional_user)):
+    if not user:
+        return RedirectResponse("/login")
+    return templates.TemplateResponse("services.html", {"request": request, "user": user})
 
 
 @app.get("/service/{service_id}")

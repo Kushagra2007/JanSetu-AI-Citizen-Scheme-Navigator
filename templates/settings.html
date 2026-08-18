@@ -1,17 +1,1 @@
-{% extends "base.html" %}
-{% block title %}Settings — Citizen Service Navigator{% endblock %}
-{% block content %}
-<div class="container" style="padding:20px 20px 60px;max-width:760px;">
-  <h2>⚙️ Settings</h2>
-  <section class="card glass" style="margin-top:20px;">
-    <h3>🔐 DigiLocker</h3>
-    <p id="digilockerStatus" style="color:var(--text-muted);">Checking connection…</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button id="connectDigiLockerBtn" class="btn btn-primary">Connect DigiLocker</button>
-      <button id="refreshDigiLockerBtn" class="btn btn-outline" style="display:none;">Refresh documents</button>
-      <button id="disconnectDigiLockerBtn" class="btn btn-ghost" style="display:none;">Disconnect</button>
-    </div>
-  </section>
-</div>
-{% endblock %}
-{% block scripts %}<script src="/static/js/settings.js"></script>{% endblock %}
+{% extends "base.html" %}{% block title %}Settings — JanSetu{% endblock %}{% block content %}<div class="container" style="padding:20px 20px 60px;max-width:760px;"><h2>Settings</h2><section class="card glass" style="margin-top:20px;"><h3>DigiLocker</h3><p id="digilockerStatus" style="color:var(--text-muted);">Checking connection…</p><div style="display:flex;gap:10px;flex-wrap:wrap;"><button id="connectDigiLockerBtn" class="btn btn-primary">Connect DigiLocker</button><button id="refreshDigiLockerBtn" class="btn btn-outline" style="display:none;">Refresh documents</button><button id="disconnectDigiLockerBtn" class="btn btn-ghost" style="display:none;">Disconnect</button></div></section></div>{% endblock %}{% block scripts %}<script src="/static/js/settings.js"></script>{% endblock %}

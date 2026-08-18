@@ -160,4 +160,51 @@ SERVICES = [
              "duration": "5-10 days", "documents": [], "sub_tasks": [], "url": ""},
         ],
     },
+    {
+        "name": "Birth Certificate", "category": "Civil Registration", "fee": "Varies by state and timing of registration",
+        "duration_estimate": "Usually a few working days after verification",
+        "description": "Official record of birth issued by the local Registrar of Births and Deaths.",
+        "steps": [
+            {"title": "Identify the registration authority", "description": "Use the municipal corporation, panchayat or hospital guidance for the place of birth.", "duration": "10 mins", "documents": [], "sub_tasks": ["Check whether the birth was registered by the hospital"], "url": "https://crsorgi.gov.in/"},
+            {"title": "Collect supporting records", "description": "Keep hospital discharge or birth record, parents' identity proof and address proof ready.", "duration": "1 day", "documents": ["hospital_record", "parent_id", "address_proof"], "sub_tasks": [], "url": ""},
+            {"title": "Submit the registration or certificate request", "description": "Apply through the relevant state or local portal, or visit the Registrar office.", "duration": "20 mins", "documents": ["hospital_record", "parent_id"], "sub_tasks": ["Use the spelling and date consistently across documents"], "url": "https://crsorgi.gov.in/"},
+            {"title": "Keep the acknowledgement number", "description": "Save the acknowledgement or application number for tracking.", "duration": "2 mins", "documents": [], "sub_tasks": [], "url": ""},
+            {"title": "Download or collect the certificate", "description": "After approval, download the digitally issued certificate or collect the certified copy as instructed.", "duration": "Ongoing", "documents": [], "sub_tasks": [], "url": ""},
+        ],
+    },
+    {
+        "name": "Income Certificate", "category": "Certificates", "fee": "Varies by state or Union Territory",
+        "duration_estimate": "Often 7-21 working days, depending on local verification",
+        "description": "Certificate issued by the competent state or local authority to record family income for a stated period.",
+        "steps": [
+            {"title": "Check your state service portal", "description": "Find the income-certificate service on your state e-district or citizen-service portal.", "duration": "10 mins", "documents": [], "sub_tasks": ["Confirm the competent authority for your address"], "url": "https://services.india.gov.in/"},
+            {"title": "Prepare income and identity records", "description": "Keep Aadhaar, address proof, income proof and any state-specific declaration ready.", "duration": "1 day", "documents": ["aadhaar", "address_proof", "income_proof", "bank"], "sub_tasks": [], "url": ""},
+            {"title": "Apply and pay the notified fee", "description": "Submit the online form or visit the designated office. Fees and documents vary by state.", "duration": "20 mins", "documents": ["aadhaar", "income_proof"], "sub_tasks": ["Review every entry before submitting"], "url": ""},
+            {"title": "Respond to verification if requested", "description": "The authority may request clarification or conduct local verification.", "duration": "Ongoing", "documents": [], "sub_tasks": [], "url": ""},
+            {"title": "Download the issued certificate", "description": "Use the application number to track and download the approved certificate.", "duration": "5 mins", "documents": [], "sub_tasks": [], "url": ""},
+        ],
+    },
+    {
+        "name": "Caste Certificate", "category": "Certificates", "fee": "Varies by state or Union Territory",
+        "duration_estimate": "Often 15-30 working days, depending on verification",
+        "description": "State-issued certificate recording a person's caste or community for eligible categories.",
+        "steps": [
+            {"title": "Check state rules and authority", "description": "Eligibility, documents and issuing authority are set by the state or Union Territory.", "duration": "15 mins", "documents": [], "sub_tasks": ["Check whether a central-format certificate is needed"], "url": "https://services.india.gov.in/"},
+            {"title": "Gather family and residence evidence", "description": "Prepare identity, address, family records and any community evidence requested by the local authority.", "duration": "1-2 days", "documents": ["aadhaar", "address_proof", "family_certificate", "school_record"], "sub_tasks": [], "url": ""},
+            {"title": "Submit application", "description": "Apply on the state e-district portal or through the designated office.", "duration": "25 mins", "documents": ["aadhaar", "address_proof"], "sub_tasks": ["Keep clear scans and originals ready"], "url": ""},
+            {"title": "Complete verification", "description": "Supply additional evidence if the issuing authority asks for it.", "duration": "Ongoing", "documents": [], "sub_tasks": [], "url": ""},
+            {"title": "Track and collect certificate", "description": "Track with the application number and download or collect the issued certificate.", "duration": "5 mins", "documents": [], "sub_tasks": [], "url": ""},
+        ],
+    },
+    {
+        "name": "e-Shram Registration", "category": "Employment", "fee": "Free",
+        "duration_estimate": "About 10-20 minutes when details are ready",
+        "description": "Registration for eligible unorganised workers on the e-Shram portal.",
+        "steps": [
+            {"title": "Check eligibility", "description": "Confirm that you are an eligible unorganised worker and have the details required by the portal.", "duration": "5 mins", "documents": [], "sub_tasks": [], "url": "https://eshram.gov.in/"},
+            {"title": "Keep Aadhaar-linked mobile and bank details ready", "description": "You will need Aadhaar, a mobile number linked to Aadhaar and bank-account details.", "duration": "10 mins", "documents": ["aadhaar", "bank"], "sub_tasks": ["Ensure you can receive the Aadhaar OTP"], "url": ""},
+            {"title": "Register on e-Shram", "description": "Enter personal, occupation and bank details on the official portal or through an assisted centre.", "duration": "15 mins", "documents": ["aadhaar", "bank"], "sub_tasks": [], "url": "https://eshram.gov.in/"},
+            {"title": "Verify details and save the card", "description": "Review the submitted information and download or save the registration card if issued.", "duration": "5 mins", "documents": [], "sub_tasks": [], "url": ""},
+        ],
+    },
 ]

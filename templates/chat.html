@@ -1,37 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Chat — Citizen Service Navigator{% endblock %}
+{% block title %}Assistant — JanSetu{% endblock %}
 {% block content %}
-<div class="container">
-  <div class="chat-wrapper glass">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--glass-border);">
-      <h3>💬 Assistant</h3>
-      <div style="display:flex;gap:12px;align-items:center;">
-        <select id="langSelect" class="form-control" style="width:auto;padding:8px;">
-          <option value="en">English</option>
-          <option value="hi">हिन्दी</option>
-        </select>
-        <label class="switch"><input type="checkbox" id="autoSpeakToggle"><span class="slider"></span></label>
-        <span style="font-size:0.85rem;">🔊 Auto-speak</span>
-        <button id="clearChatBtn" class="btn btn-ghost" style="padding:6px 12px;font-size:0.8rem;">Clear</button>
-      </div>
-    </div>
-    <div class="quick-actions">
-      <button class="btn btn-outline" data-query="Tell me about PAN card">PAN Card</button>
-      <button class="btn btn-outline" data-query="How to open a bank account">Bank Account</button>
-      <button class="btn btn-outline" data-query="Tell me about passport process">Passport</button>
-      <button class="btn btn-outline" data-query="Tell me about Aadhaar card">Aadhaar</button>
-      <button class="btn btn-outline" data-query="What schemes am I eligible for">Find Schemes</button>
-    </div>
-    <div id="chatMessages" class="chat-messages"></div>
-    <form id="chatForm" class="chat-input-bar">
-      <button type="button" id="micBtn" class="btn btn-secondary btn-icon mic-btn">🎤</button>
-      <input type="text" id="chatInput" class="form-control" placeholder="Type your message... (e.g. 'I am 25 years old, farmer, income 1 lakh')">
-      <button type="submit" class="btn btn-primary">Send</button>
-    </form>
-  </div>
-</div>
+<div class="container chat-page"><div class="chat-wrapper"><aside class="chat-aside"><a href="/" class="brand chat-brand"><span class="brand-mark">J</span><span>JanSetu</span></a><div><p class="eyebrow">Your guide</p><h2>How can we help today?</h2><p>Ask about a service, document, or the support you may be eligible for.</p></div><div class="aside-note"><span class="icon icon-lock"></span><p>Your conversation stays private and is saved to help you pick up where you left off.</p></div></aside><section class="chat-panel"><header class="chat-header"><div><p class="eyebrow">JanSetu assistant</p><h3>Service guidance</h3></div><div class="chat-tools"><select id="langSelect" class="form-control" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option></select><label class="speak-control"><span>Auto-speak</span><span class="switch"><input type="checkbox" id="autoSpeakToggle"><span class="slider"></span></span></label><button id="clearChatBtn" class="btn btn-ghost chat-clear">Clear chat</button></div></header><div class="quick-actions"><span>Start with a topic</span><button data-query="Tell me about PAN card">PAN card</button><button data-query="How to open a bank account">Bank account</button><button data-query="Tell me about passport process">Passport</button><button data-query="Tell me about Aadhaar card">Aadhaar</button><button data-query="What schemes am I eligible for">Find schemes</button></div><div id="chatMessages" class="chat-messages"></div><form id="chatForm" class="chat-input-bar"><button type="button" id="micBtn" class="btn btn-ghost btn-icon mic-btn" aria-label="Speak your message"><span class="icon icon-mic"></span></button><input type="text" id="chatInput" class="form-control" placeholder="Ask a question or describe what you need"><button type="submit" class="btn btn-primary">Send <span aria-hidden="true">→</span></button></form></section></div></div>
 {% endblock %}
-{% block scripts %}
-<script src="/static/js/voice.js"></script>
-<script src="/static/js/chat.js"></script>
-{% endblock %}
+{% block scripts %}<script src="/static/js/voice.js"></script><script src="/static/js/chat.js"></script>{% endblock %}

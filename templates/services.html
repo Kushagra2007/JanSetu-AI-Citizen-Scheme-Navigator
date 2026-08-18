@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Documents and services — JanSetu{% endblock %}
+{% block content %}
+<main class="container" style="padding:32px 20px 60px;">
+  <p class="eyebrow">Step-by-step support</p>
+  <h1 style="font:500 clamp(2.2rem,4vw,3.5rem)/1 Fraunces,Georgia,serif;letter-spacing:-.06em;">Documents and public services</h1>
+  <p style="max-width:650px;color:var(--text-muted);line-height:1.6;margin:15px 0 28px;">Choose a service to see the documents to prepare, official starting point, and every step from application to tracking.</p>
+  <div id="servicesGrid" class="grid grid-3"></div>
+</main>
+{% endblock %}
+{% block scripts %}<script src="/static/js/services.js"></script>{% endblock %}
