@@ -1,4 +1,6 @@
-let currentSessionId = localStorage.getItem('csn_session_id') || 'default';
+// A conversation belongs to the signed-in account, not to the current page.
+// Keeping this stable ensures returning from a scheme or service restores it.
+const currentSessionId = 'default';
 let autoSpeak = localStorage.getItem('csn_autospeak') === 'true';
 let currentLang = 'en';
 
@@ -27,18 +29,42 @@ async function sendChatMessage(text) {
   if (!text.trim()) return;
   appendMessage('user', text);
   document.getElementById('chatInput').value = '';
-  const res = await apiFetch('/api/chat/message', {
-    method: 'POST', body: JSON.stringify({ message: text, session_id: currentSessionId }),
-  });
-  if (!res || !res.ok) { appendMessage('bot', 'Something went wrong. Please try again.'); return; }
+  let res;
+  try {
+    res = await apiFetch('/api/chat/message', {
+      method: 'POST', body: JSON.stringify({ message: text, session_id: currentSessionId, language: currentLang }),
+    });
+  } catch (_) {
+    appendMessage('bot', 'Unable to reach the server. Please check your connection and try again.');
+    return;
+  }
+  if (!res || !res.ok) {
+    let message = 'Something went wrong. Please try again.';
+    try { message = (await res.json()).detail || message; } catch (_) { /* Keep the safe fallback. */ }
+    appendMessage('bot', message);
+    return;
+  }
   const data = await res.json();
   appendMessage('bot', data.response);
   if (autoSpeak) speakText(data.response, currentLang);
+  if (data.redirect_url) {
+    const link = document.createElement('a');
+    link.className = 'btn btn-primary';
+    link.style.marginTop = '8px';
+    link.href = data.redirect_url;
+    link.textContent = data.redirect_label || 'Open page';
+    document.getElementById('chatMessages').appendChild(link);
+    window.setTimeout(() => { window.location.href = data.redirect_url; }, 900);
+  }
   loadUnreadCount();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  localStorage.setItem('csn_session_id', currentSessionId);
+  currentLang = localStorage.getItem('csn_chat_language') || 'en';
+  document.getElementById('langSelect').value = currentLang;
+  document.getElementById('autoSpeakToggle').checked = autoSpeak;
+  document.getElementById('voiceToggle').checked = voiceEnabled;
+  setVoiceEnabled(voiceEnabled);
   loadChatHistory();
 
   const form = document.getElementById('chatForm');
@@ -59,6 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('langSelect')?.addEventListener('change', (e) => {
     currentLang = e.target.value;
+    localStorage.setItem('csn_chat_language', currentLang);
+  });
+
+  document.getElementById('voiceToggle')?.addEventListener('change', (e) => {
+    setVoiceEnabled(e.target.checked);
   });
 
   document.querySelectorAll('.quick-actions button').forEach(btn => {

@@ -1,4 +1,4 @@
-from nlp_engine import detect_intent, extract_entities, process_message
+from nlp_engine import _follow_up, detect_intent, extract_entities, process_message
 
 
 def test_greeting_intent():
@@ -31,6 +31,11 @@ def test_extract_income_lakh():
     assert entities.get("income") == 200000.0
 
 
+def test_extract_income_with_indian_number_format():
+    entities = extract_entities("My annual family income is ₹2,00,000")
+    assert entities.get("income") == 200000.0
+
+
 def test_extract_gender():
     entities = extract_entities("I am a female farmer")
     assert entities.get("gender") == "Female"
@@ -53,3 +58,40 @@ def test_process_message_full():
 def test_unknown_intent():
     intent, conf = detect_intent("asdkjaslkdj random text 123")
     assert intent == "unknown"
+
+
+def test_incomplete_profile_requests_only_missing_fields():
+    result = process_message("I am 25 years old and earn 2 lakh", profile_ctx={})
+    assert result["missing_profile_fields"] == ["gender", "state", "category", "occupation", "education", "marital_status"]
+    assert "state/UT" in result["response"]
+    assert result["navigation"] is None
+
+
+def test_service_catalogue_entity_is_recognised():
+    result = process_message("How can I get an income certificate?")
+    assert result["intent"] == "ask_service"
+    assert result["entities"]["service_mentioned"] == "Income Certificate"
+
+
+def test_student_scholarship_opens_scholarship_navigation():
+    complete_profile = {"age": 20, "gender": "Female", "income": 200000, "state": "Bihar", "category": "OBC", "occupation": "student", "education": "12th", "marital_status": "Unmarried"}
+    result = process_message("I need a student scholarship", profile_ctx=complete_profile)
+    assert result["entities"]["scheme_category"] == "Scholarship"
+    assert result["navigation"]["type"] == "scheme"
+
+
+def test_last_required_detail_triggers_schemes_only_after_profile_is_complete():
+    partial_profile = {"age": 20, "gender": "Female", "income": 200000, "state": "Bihar", "category": "OBC", "occupation": "student", "education": "12th"}
+    result = process_message("I am unmarried", profile_ctx=partial_profile)
+    assert result["missing_profile_fields"] == []
+    assert result["navigation"]["type"] == "scheme"
+
+
+def test_hindi_follow_up_requires_the_remaining_profile_details():
+    profile = {"age": 25}
+    assert "परिवार की वार्षिक आय" in _follow_up(profile, language="hi")
+
+
+def test_hindi_scheme_reply_is_returned_in_hindi():
+    result = process_message("मुझे योजना चाहिए", language="hi")
+    assert "योजनाएँ" in result["response"]

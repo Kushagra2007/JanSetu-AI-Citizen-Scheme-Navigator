@@ -53,6 +53,42 @@ def test_chat_message_flow(client):
     assert len(history.json()) == 2
 
 
+def test_chat_history_is_preserved_when_the_browser_session_id_changes(client):
+    client = _authed_client(client, email="chatpersisttest@example.com")
+    client.post("/api/chat/message", json={"message": "I am 22 years old student from Delhi", "session_id": "before-redirect"})
+
+    # A return from another page must restore the account conversation even if
+    # the browser no longer has its earlier local session value.
+    history = client.get("/api/chat/history?session_id=after-redirect")
+    assert len(history.json()) == 2
+    assert history.json()[0]["message"] == "I am 22 years old student from Delhi"
+
+
+def test_chat_page_renders_saved_history_before_javascript_loads(client):
+    client = _authed_client(client, email="chatpagetest@example.com")
+    message = "How can I get a passport?"
+    client.post("/api/chat/message", json={"message": message})
+
+    page = client.get("/chat")
+    assert page.status_code == 200
+    assert message in page.text
+
+
+def test_chat_service_message_returns_service_path(client):
+    client = _authed_client(client, email="servicechattest@example.com")
+    res = client.post("/api/chat/message", json={"message": "I need a passport", "session_id": "s1"})
+    assert res.status_code == 200
+    assert res.json()["redirect_url"].startswith("/service/")
+
+
+def test_chat_scholarship_message_returns_filtered_schemes(client):
+    client = _authed_client(client, email="schemechattest@example.com")
+    res = client.post("/api/chat/message", json={"message": "I need a student scholarship", "session_id": "s1"})
+    assert res.status_code == 200
+    assert res.json()["redirect_url"] is None
+    assert "income" in res.json()["missing_profile_fields"]
+
+
 def test_create_and_track_application(client):
     client = _authed_client(client, email="apptest@example.com")
     services = client.get("/api/services").json()
