@@ -3,31 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Citizen Service Navigator{% endblock %}</title>
+  <title>{% block title %}JanSetu{% endblock %}</title>
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="manifest" href="/static/manifest.json">
   <script src="/static/js/theme.js"></script>
 </head>
 <body>
   {% if user %}
-  <nav class="navbar glass container">
-    <a href="/" class="brand">🧭 Citizen Navigator</a>
+  <nav class="navbar container">
+    <a href="/" class="brand"><span class="brand-mark">J</span><span>JanSetu</span></a>
     <div class="nav-links">
-      <a href="/chat">💬 Chat</a>
-      <a href="/schemes">🎯 Schemes</a>
-      <a href="/applications">📋 Applications</a>
-      <a href="/profile">👤 Profile</a>
-      <a href="/notifications" class="bell-wrap">🔔 <span id="unreadDot" class="bell-dot" style="display:none;"></span></a>
-      <a href="/settings">⚙️ Settings</a>
-      <button class="btn-icon btn-ghost" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
+      <a href="/chat">Assistant</a><a href="/schemes">Schemes</a><a href="/services">Documents &amp; services</a><a href="/applications">Applications</a><a href="/profile">Profile</a>
+      <a href="/notifications" class="bell-wrap nav-icon-button" aria-label="Notifications"><span class="icon icon-bell"></span><span id="unreadDot" class="bell-dot" style="display:none;"></span></a>
+      <a href="/settings">Settings</a>
+      <button class="btn-icon btn-ghost theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle colour theme"><span class="icon icon-moon"></span></button>
     </div>
   </nav>
   {% endif %}
-
   {% block content %}{% endblock %}
-
-  <footer>© 2024 Citizen Service Navigator · Built for accessible governance</footer>
-
+  <footer>JanSetu &middot; Clear pathways to public services</footer>
   <script src="/static/js/app.js"></script>
   {% block scripts %}{% endblock %}
 </body>
