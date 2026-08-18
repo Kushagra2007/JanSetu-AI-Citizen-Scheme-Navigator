@@ -7,6 +7,7 @@ from models import User, Application, Scheme, Service
 from schemas import ApplicationCreate, ApplicationStepUpdate, ApplicationStatusUpdate
 from auth import get_current_user
 from notifications import notify_status_update
+from data.seed import ensure_reference_data
 
 router = APIRouter(prefix="/api/applications", tags=["applications"])
 
@@ -25,6 +26,9 @@ def app_to_dict(a: Application):
 
 @router.post("")
 def create_application(payload: ApplicationCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if payload.type not in {"scheme", "service"}:
+        raise HTTPException(status_code=400, detail="Application type must be 'scheme' or 'service'")
+    ensure_reference_data(db)
     if payload.type == "scheme":
         ref = db.query(Scheme).filter(Scheme.id == payload.ref_id).first()
         num_steps = 4

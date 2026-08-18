@@ -2,6 +2,7 @@
 Custom rule-based NLP engine for Hindi/English citizen-service chat.
 No external APIs — pure regex + keyword matching.
 """
+import json
 import re
 
 STATES = [
@@ -212,4 +213,139 @@ def process_message(text: str, language: str = "en", profile_ctx: dict = None) -
         "confidence": confidence,
         "entities": entities,
         "response": response,
+    }
+
+
+def _coerce_list(value):
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return value
+    if isinstance(value, tuple):
+        return list(value)
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return []
+        try:
+            parsed = json.loads(text)
+            if isinstance(parsed, list):
+                return parsed
+        except (TypeError, ValueError):
+            pass
+        return [item.strip() for item in text.split(",") if item.strip()]
+    return [value]
+
+
+def compute_profile_completeness(profile) -> float:
+    if profile is None:
+        return 0.0
+
+    fields = [
+        "age", "gender", "income", "occupation", "state",
+        "category", "education", "marital_status", "disability",
+    ]
+    filled = 0
+    for field in fields:
+        value = getattr(profile, field, None)
+        if value is None:
+            continue
+        if isinstance(value, str) and not value.strip():
+            continue
+        filled += 1
+
+    score = (filled / len(fields)) * 100
+    return round(score, 2)
+
+
+def compute_eligibility_score(profile, documents, scheme) -> dict:
+    if profile is None or scheme is None:
+        return {
+            "eligible": False,
+            "total_score": 0,
+            "eligibility_score": 0,
+            "document_score": 0,
+            "completeness_score": 0,
+            "failed_criteria": ["Profile details missing"],
+            "missing_documents": [],
+        }
+
+    failed_criteria = []
+    age = getattr(profile, "age", None)
+    if getattr(scheme, "min_age", None) is not None and age is not None and age < scheme.min_age:
+        failed_criteria.append("Age range")
+    if getattr(scheme, "max_age", None) is not None and age is not None and age > scheme.max_age:
+        failed_criteria.append("Age range")
+
+    income = getattr(profile, "income", None)
+    if getattr(scheme, "max_income", None) is not None and income is not None and income > scheme.max_income:
+        failed_criteria.append("Income limit")
+
+    gender = getattr(profile, "gender", None)
+    required_gender = getattr(scheme, "gender", "All")
+    if required_gender not in (None, "All") and gender not in (None, required_gender, "All"):
+        failed_criteria.append("Gender requirement")
+
+    category = getattr(profile, "category", None)
+    allowed_categories = _coerce_list(getattr(scheme, "caste_categories", []))
+    if allowed_categories and category not in allowed_categories:
+        failed_criteria.append("Category requirement")
+
+    occupation = getattr(profile, "occupation", None)
+    allowed_occupations = _coerce_list(getattr(scheme, "occupations", []))
+    if allowed_occupations and occupation not in allowed_occupations:
+        failed_criteria.append("Occupation requirement")
+
+    state = getattr(profile, "state", None)
+    allowed_states = _coerce_list(getattr(scheme, "states", ["All"]))
+    if allowed_states and "All" not in allowed_states and state not in allowed_states:
+        failed_criteria.append("State requirement")
+
+    education = getattr(profile, "education", None)
+    allowed_education = _coerce_list(getattr(scheme, "education", []))
+    if allowed_education and education not in allowed_education:
+        failed_criteria.append("Education requirement")
+
+    marital_status = getattr(profile, "marital_status", None)
+    required_marital = getattr(scheme, "marital_status", "Any")
+    if required_marital not in (None, "Any", "") and marital_status not in (None, required_marital):
+        failed_criteria.append("Marital status")
+
+    disability = getattr(profile, "disability", False)
+    if getattr(scheme, "disability_required", False) and not disability:
+        failed_criteria.append("Disability requirement")
+
+    required_docs = _coerce_list(getattr(scheme, "documents_required", []))
+    doc_map = {}
+    for doc in documents or []:
+        dtype = getattr(doc, "doc_type", None)
+        has_doc = getattr(doc, "has_document", False)
+        if dtype is not None:
+            doc_map[dtype] = bool(has_doc)
+
+    missing_documents = []
+    for doc_name in required_docs:
+        if not doc_map.get(doc_name, False):
+            missing_documents.append(doc_name)
+
+    doc_count = len(required_docs)
+    docs_met = max(0, doc_count - len(missing_documents))
+    document_score = 30 if doc_count == 0 else round((docs_met / doc_count) * 30)
+
+    completeness_score = compute_profile_completeness(profile)
+    profile_component = round((completeness_score / 100) * 10, 2)
+
+    eligibility_score = 60 if not failed_criteria else max(0, 60 - (len(set(failed_criteria)) * 20))
+
+    total_score = min(100, round(eligibility_score + document_score + profile_component, 2))
+    eligible = not failed_criteria and not missing_documents
+
+    return {
+        "eligible": eligible,
+        "total_score": total_score,
+        "eligibility_score": round(eligibility_score, 2),
+        "document_score": document_score,
+        "completeness_score": round(profile_component, 2),
+        "failed_criteria": sorted(set(failed_criteria)),
+        "missing_documents": missing_documents,
     }

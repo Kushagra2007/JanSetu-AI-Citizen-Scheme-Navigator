@@ -1,11 +1,17 @@
 async function apiFetch(url, options = {}) {
   const opts = { credentials: 'include', headers: { 'Content-Type': 'application/json' }, ...options };
   const res = await fetch(url, opts);
-  if (res.status === 401) { window.location.href = '/login'; return null; }
+  const currentPath = window.location.pathname;
+  if (res.status === 401 && currentPath !== '/login' && currentPath !== '/register') {
+    window.location.href = '/login';
+    return null;
+  }
   return res;
 }
 
 async function loadUnreadCount() {
+  const currentPath = window.location.pathname;
+  if (currentPath === '/login' || currentPath === '/register') return;
   const res = await apiFetch('/api/notifications/unread-count');
   if (!res || !res.ok) return;
   const data = await res.json();

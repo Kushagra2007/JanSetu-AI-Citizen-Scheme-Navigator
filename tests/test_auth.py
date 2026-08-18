@@ -15,6 +15,17 @@ def test_register_duplicate_email(client):
     assert r2.status_code == 400
 
 
+def test_register_duplicate_phone(client):
+    client.post("/api/auth/register", json={
+        "name": "First", "email": "first-phone@example.com", "phone": "7777777777", "password": "pass123",
+    })
+    res = client.post("/api/auth/register", json={
+        "name": "Second", "email": "second-phone@example.com", "phone": "7777777777", "password": "pass123",
+    })
+    assert res.status_code == 400
+    assert res.json()["detail"] == "Phone number already registered"
+
+
 def test_login_success(client):
     client.post("/api/auth/register", json={"name": "Carol", "email": "carol@example.com", "password": "pw12345"})
     res = client.post("/api/auth/login", json={"email": "carol@example.com", "password": "pw12345"})

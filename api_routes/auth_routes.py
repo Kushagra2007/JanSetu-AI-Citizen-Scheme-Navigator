@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from database import get_db
 from models import User, Profile
@@ -14,18 +15,26 @@ def register(payload: RegisterRequest, response: Response, db: Session = Depends
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    phone = payload.phone.strip() if payload.phone else None
+    if phone and db.query(User).filter(User.phone == phone).first():
+        raise HTTPException(status_code=400, detail="Phone number already registered")
+
     user = User(
-        name=payload.name, email=payload.email, phone=payload.phone,
+        name=payload.name, email=payload.email, phone=phone,
         password_hash=hash_password(payload.password),
         token=generate_token(), language_pref=payload.language_pref or "en",
     )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-
-    profile = Profile(user_id=user.id)
-    db.add(profile)
-    db.commit()
+    try:
+        db.add(user)
+        db.flush()
+        db.add(Profile(user_id=user.id))
+        db.commit()
+        db.refresh(user)
+    except IntegrityError:
+        # A second concurrent request may pass the checks above; never expose
+        # a database exception to the browser in that case.
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Email or phone number already registered")
 
     response.set_cookie("csn_token", user.token, httponly=True, max_age=60 * 60 * 24 * 30, samesite="lax")
     return {"message": "Registered successfully", "user": {"id": user.id, "name": user.name, "email": user.email}}

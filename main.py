@@ -6,10 +6,10 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from database import Base, engine, get_db
-from models import Scheme, Service
+from models import Scheme, Service, User, Profile
 from data.schemes_data import SCHEMES
 from data.services_data import SERVICES
-from auth import get_optional_user
+from auth import get_optional_user, hash_password, generate_token
 
 from api_routes import (
     auth_routes, profile_routes, chat_routes, scheme_routes,
@@ -32,6 +32,21 @@ for r in [auth_routes.router, profile_routes.router, chat_routes.router, scheme_
 @app.on_event("startup")
 def seed_data():
     db: Session = next(get_db())
+
+    if db.query(User).count() == 0:
+        demo_user = User(
+            name="Demo User",
+            email="demo@jansetu.in",
+            phone="9999999999",
+            password_hash=hash_password("demo123"),
+            token=generate_token(),
+            language_pref="en",
+        )
+        db.add(demo_user)
+        db.commit()
+        db.refresh(demo_user)
+        db.add(Profile(user_id=demo_user.id))
+
     if db.query(Scheme).count() == 0:
         for s in SCHEMES:
             db.add(Scheme(

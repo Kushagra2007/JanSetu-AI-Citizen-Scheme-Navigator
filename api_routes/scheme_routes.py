@@ -5,6 +5,7 @@ from database import get_db
 from models import User, Profile, Document, Scheme
 from auth import get_current_user
 from scoring import compute_eligibility_score
+from data.seed import ensure_reference_data
 
 router = APIRouter(prefix="/api/schemes", tags=["schemes"])
 
@@ -24,6 +25,7 @@ def scheme_to_dict(s: Scheme):
 
 @router.get("")
 def list_schemes(category: str = None, db: Session = Depends(get_db)):
+    ensure_reference_data(db)
     q = db.query(Scheme)
     if category:
         q = q.filter(Scheme.category == category)
@@ -32,6 +34,7 @@ def list_schemes(category: str = None, db: Session = Depends(get_db)):
 
 @router.get("/recommended")
 def recommended_schemes(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    ensure_reference_data(db)
     profile = db.query(Profile).filter(Profile.user_id == user.id).first()
     documents = db.query(Document).filter(Document.user_id == user.id).all()
     schemes = db.query(Scheme).all()
@@ -53,6 +56,7 @@ def get_saved_schemes(user: User = Depends(get_current_user), db: Session = Depe
 
 @router.get("/{scheme_id}")
 def get_scheme(scheme_id: int, db: Session = Depends(get_db)):
+    ensure_reference_data(db)
     s = db.query(Scheme).filter(Scheme.id == scheme_id).first()
     if not s:
         raise HTTPException(status_code=404, detail="Scheme not found")
@@ -61,6 +65,7 @@ def get_scheme(scheme_id: int, db: Session = Depends(get_db)):
 
 @router.get("/{scheme_id}/eligibility")
 def check_eligibility(scheme_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    ensure_reference_data(db)
     s = db.query(Scheme).filter(Scheme.id == scheme_id).first()
     if not s:
         raise HTTPException(status_code=404, detail="Scheme not found")
