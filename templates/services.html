@@ -5,6 +5,10 @@
   <p class="eyebrow">Step-by-step support</p>
   <h1 style="font:500 clamp(2.2rem,4vw,3.5rem)/1 Fraunces,Georgia,serif;letter-spacing:-.06em;">Documents and public services</h1>
   <p style="max-width:650px;color:var(--text-muted);line-height:1.6;margin:15px 0 28px;">Choose a service to see the documents to prepare, official starting point, and every step from application to tracking.</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
+    <input id="serviceSearch" class="form-control" style="max-width:390px;" type="search" placeholder="Search PAN, passport, certificate…" aria-label="Search services">
+    <select id="serviceCategory" class="form-control" style="max-width:240px;" aria-label="Filter services by category"><option value="">All categories</option></select>
+  </div>
   <div id="servicesGrid" class="grid grid-3"></div>
 </main>
 {% endblock %}

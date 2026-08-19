@@ -9,17 +9,19 @@
   <script src="/static/js/theme.js"></script>
 </head>
 <body>
-  {% if user %}
-  <nav class="navbar container">
+  <nav class="navbar container{% if not user %} landing-nav{% endif %}">
     <a href="/" class="brand"><span class="brand-mark">J</span><span>JanSetu</span></a>
+    {% if user %}
     <div class="nav-links">
       <a href="/chat">Assistant</a><a href="/schemes">Schemes</a><a href="/services">Documents &amp; services</a><a href="/applications">Applications</a><a href="/profile">Profile</a>
       <a href="/notifications" class="bell-wrap nav-icon-button" aria-label="Notifications"><span class="icon icon-bell"></span><span id="unreadDot" class="bell-dot" style="display:none;"></span></a>
       <a href="/settings">Settings</a>
       <button class="btn-icon btn-ghost theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle colour theme"><span class="icon icon-moon"></span></button>
     </div>
+    {% else %}
+    <div class="nav-links"><a href="/login">Sign in</a><a href="/register" class="btn btn-primary nav-cta">Create account</a><button class="btn-icon btn-ghost theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle colour theme"><span class="icon icon-moon"></span></button></div>
+    {% endif %}
   </nav>
-  {% endif %}
   {% block content %}{% endblock %}
   <footer>JanSetu &middot; Clear pathways to public services</footer>
   <script src="/static/js/app.js"></script>

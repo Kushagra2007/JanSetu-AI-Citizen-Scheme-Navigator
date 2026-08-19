@@ -38,6 +38,7 @@ class DocumentUpdate(BaseModel):
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = "default"
+    language: Optional[str] = "en"
 
 
 class ApplicationCreate(BaseModel):

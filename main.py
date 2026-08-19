@@ -7,7 +7,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from database import Base, engine, get_db
-from models import Scheme, Service, User, Profile
+from models import ChatMessage, Scheme, Service, User, Profile
 from data.schemes_data import SCHEMES
 from data.services_data import SERVICES
 from data.seed import ensure_reference_data
@@ -64,23 +64,23 @@ def landing(request: Request, user=Depends(get_optional_user)):
 
 @app.get("/login")
 def login_page(request: Request, user=Depends(get_optional_user)):
-    if user:
-        return RedirectResponse("/chat")
     return templates.TemplateResponse("login.html", {"request": request, "user": None})
 
 
 @app.get("/register")
 def register_page(request: Request, user=Depends(get_optional_user)):
-    if user:
-        return RedirectResponse("/chat")
     return templates.TemplateResponse("register.html", {"request": request, "user": None})
 
 
 @app.get("/chat")
-def chat_page(request: Request, user=Depends(get_optional_user)):
+def chat_page(request: Request, user=Depends(get_optional_user), db: Session = Depends(get_db)):
     if not user:
         return RedirectResponse("/login")
-    return templates.TemplateResponse("chat.html", {"request": request, "user": user})
+    history = (db.query(ChatMessage)
+               .filter(ChatMessage.user_id == user.id)
+               .order_by(ChatMessage.created_at.asc(), ChatMessage.id.asc())
+               .all())
+    return templates.TemplateResponse("chat.html", {"request": request, "user": user, "history": history})
 
 
 @app.get("/profile")
