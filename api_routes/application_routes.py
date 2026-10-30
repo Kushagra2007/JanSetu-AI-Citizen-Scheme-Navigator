@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
@@ -43,7 +43,7 @@ def create_application(payload: ApplicationCreate, user: User = Depends(get_curr
     application = Application(
         user_id=user.id, type=payload.type, ref_id=payload.ref_id, ref_name=ref.name,
         status="draft", current_step=0, progress=json.dumps(progress),
-        expected_completion=datetime.utcnow() + timedelta(days=30),
+        expected_completion=datetime.now(timezone.utc) + timedelta(days=30),
     )
     db.add(application)
     db.commit()
@@ -97,13 +97,3 @@ def update_step(app_id: int, payload: ApplicationStepUpdate, user: User = Depend
         a.status = "submitted"
     db.commit()
     return app_to_dict(a)
-
-
-@router.delete("/{app_id}")
-def delete_application(app_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    a = db.query(Application).filter(Application.id == app_id, Application.user_id == user.id).first()
-    if not a:
-        raise HTTPException(status_code=404, detail="Application not found")
-    db.delete(a)
-    db.commit()
-    return {"message": "Application deleted"}

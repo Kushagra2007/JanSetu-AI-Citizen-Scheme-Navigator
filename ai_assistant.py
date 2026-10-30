@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
 
@@ -30,11 +30,12 @@ def _catalogue_context(schemes, services):
 
 def generate_citizen_reply(message, language, profile_ctx, schemes, services, recent_messages):
     """Return a concise grounded answer, or None when Gemini is unavailable."""
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = (os.getenv("GEMINI_API_KEY") or "").strip()
     # Automated tests must stay deterministic and must never consume a live API.
     if not api_key or os.getenv("PYTEST_CURRENT_TEST"):
         return None
 
+    model_name = os.getenv("GEMINI_MODEL", "gemini-1.5-flash").strip()
     language_name = "Hindi (Devanagari)" if language == "hi" else "English"
     recent = "\n".join(f"{item.sender}: {item.message}" for item in recent_messages[-6:]) or "No earlier messages."
     prompt = f"""You are JanSetu, a careful Indian citizen scheme and public-service navigator.
@@ -57,7 +58,7 @@ User: {message}
         "generationConfig": {"temperature": 0.2, "maxOutputTokens": 300},
     }).encode("utf-8")
     request = Request(
-        GEMINI_URL.format(model=GEMINI_MODEL), body,
+        GEMINI_URL.format(model=model_name), body,
         headers={"Content-Type": "application/json", "x-goog-api-key": api_key}, method="POST",
     )
     try:

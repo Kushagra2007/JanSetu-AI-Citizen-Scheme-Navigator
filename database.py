@@ -5,7 +5,15 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./citizen_navigator.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    # On Vercel / serverless runtimes, the root filesystem is read-only.
+    # Fall back to the writable /tmp directory if DATABASE_URL is not set.
+    if os.getenv("VERCEL"):
+        DATABASE_URL = "sqlite:////tmp/citizen_navigator.db"
+    else:
+        DATABASE_URL = "sqlite:///./citizen_navigator.db"
 
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)

@@ -5,7 +5,7 @@ import base64
 import os
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from database import get_db
 from models import User, Profile, ChatMessage, Service, Scheme
@@ -20,7 +20,7 @@ router = APIRouter(prefix="/api/chat", tags=["chat"])
 
 @router.post("/message")
 def send_message(payload: ChatRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # JanSetu keeps one continuous conversation per account.  Older browser
+    # JanSetu keeps one continuous conversation per account. Older browser
     # session IDs are retained with the messages, but cannot make a returning
     # user lose their conversation.
     session_id = payload.session_id or "default"
@@ -134,22 +134,32 @@ def new_session():
 
 
 @router.post("/transcribe")
-async def transcribe_hindi(audio: UploadFile = File(...), user: User = Depends(get_current_user)):
-    """Transcribe a short microphone clip with Google Cloud Speech-to-Text."""
-    api_key = os.getenv("GOOGLE_SPEECH_API_KEY") or os.getenv("GEMINI_API_KEY")
+async def transcribe_audio(
+    audio: UploadFile = File(...),
+    language: str = Form("hi"),
+    user: User = Depends(get_current_user)
+):
+    """Transcribe a microphone audio clip with Google Cloud Speech-to-Text."""
+    api_key = (os.getenv("GOOGLE_SPEECH_API_KEY") or os.getenv("GEMINI_API_KEY") or "").strip()
     if not api_key:
-        raise HTTPException(503, "Voice transcription is not configured.")
-    if audio.content_type not in {"audio/webm", "audio/webm;codecs=opus"}:
+        raise HTTPException(503, "Voice transcription is not configured. Please set GOOGLE_SPEECH_API_KEY or GEMINI_API_KEY.")
+    
+    # Allow webm formats (with or without codec parameters)
+    ct = (audio.content_type or "").lower()
+    if "audio/webm" not in ct and "video/webm" not in ct and "application/octet-stream" not in ct:
         raise HTTPException(415, "Please record audio in WebM format.")
+        
     content = await audio.read()
     if not content:
         raise HTTPException(400, "The audio recording is empty.")
     if len(content) > 10 * 1024 * 1024:
         raise HTTPException(413, "Voice recordings must be under 10 MB.")
+
+    lang_code = "hi-IN" if language == "hi" else "en-IN"
     payload = json.dumps({
         "config": {
             "encoding": "WEBM_OPUS", "sampleRateHertz": 48000,
-            "languageCode": "hi-IN", "enableAutomaticPunctuation": True,
+            "languageCode": lang_code, "enableAutomaticPunctuation": True,
         },
         "audio": {"content": base64.b64encode(content).decode("ascii")},
     }).encode("utf-8")
@@ -166,9 +176,11 @@ async def transcribe_hindi(audio: UploadFile = File(...), user: User = Depends(g
         raise HTTPException(502, "Google Speech-to-Text could not process the recording.")
     except (URLError, TimeoutError, ValueError):
         raise HTTPException(502, "Google Speech-to-Text is temporarily unavailable.")
+    
     transcript = " ".join(
         item.get("alternatives", [{}])[0].get("transcript", "") for item in result.get("results", [])
     ).strip()
     if not transcript:
-        raise HTTPException(422, "No Hindi speech was detected. Please try again.")
+        lang_display = "Hindi" if language == "hi" else "English"
+        raise HTTPException(422, f"No {lang_display} speech was detected. Please speak clearly and try again.")
     return {"transcript": transcript}

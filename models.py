@@ -1,7 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Boolean, Float, ForeignKey, Text, DateTime
 from sqlalchemy.orm import relationship
 from database import Base
+
+
+def utc_now():
+    return datetime.now(timezone.utc)
 
 
 class User(Base):
@@ -15,7 +19,7 @@ class User(Base):
     language_pref = Column(String, default="en")
     dark_mode = Column(Boolean, default=False)
     digilocker_connected = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
 
     profile = relationship("Profile", back_populates="user", uselist=False)
     documents = relationship("Document", back_populates="user")
@@ -40,7 +44,7 @@ class Profile(Base):
     disability = Column(Boolean, default=False)
     saved_schemes = Column(Text, default="[]")
     completeness = Column(Float, default=0.0)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
 
     user = relationship("User", back_populates="profile")
 
@@ -54,7 +58,7 @@ class Document(Base):
     verified = Column(Boolean, default=False)
     source = Column(String, default="manual")
     doc_number = Column(String, nullable=True)
-    updated_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=utc_now)
 
     user = relationship("User", back_populates="documents")
 
@@ -104,8 +108,8 @@ class Application(Base):
     current_step = Column(Integer, default=0)
     progress = Column(Text, default="[]")
     expected_completion = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
 
     user = relationship("User", back_populates="applications")
 
@@ -119,7 +123,7 @@ class Notification(Base):
     message = Column(Text)
     related_id = Column(Integer, nullable=True)
     read = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
 
     user = relationship("User", back_populates="notifications")
 
@@ -133,6 +137,6 @@ class ChatMessage(Base):
     message = Column(Text)
     intent = Column(String, nullable=True)
     entities = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
 
     user = relationship("User", back_populates="chat_messages")

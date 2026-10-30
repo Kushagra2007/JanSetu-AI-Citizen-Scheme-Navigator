@@ -1,6 +1,6 @@
 import os
 import secrets
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
@@ -49,7 +49,7 @@ def callback(state: str, code: str, db: Session = Depends(get_db)):
         doc.verified = True
         doc.source = "digilocker"
         doc.doc_number = f"MOCK-{doc_type.upper()}-{secrets.token_hex(4)}"
-        doc.updated_at = datetime.utcnow()
+        doc.updated_at = datetime.now(timezone.utc)
     db.commit()
 
     return RedirectResponse(url="/settings?digilocker=success")
@@ -80,6 +80,6 @@ def refresh_documents(user: User = Depends(get_current_user), db: Session = Depe
     for doc_type in MOCK_DOCS:
         doc = db.query(Document).filter(Document.user_id == user.id, Document.doc_type == doc_type).first()
         if doc:
-            doc.updated_at = datetime.utcnow()
+            doc.updated_at = datetime.now(timezone.utc)
     db.commit()
     return {"message": "Documents refreshed from DigiLocker"}
